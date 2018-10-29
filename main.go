@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/posttul/exchange/storage"
 )
@@ -20,9 +21,13 @@ func main() {
 		panic(err)
 	}
 	// Start Server
-	s := Server{
+	s := &Server{
 		Storage: store,
 	}
+
+	scrap := NewScraper(time.Second * 5)
+	go scrap.GetData(store)
+
 	log.Printf("Starting http server a port %s", *port)
 	http.HandleFunc("/rate", s.GetUSDRate())
 	http.ListenAndServe(*port, nil)

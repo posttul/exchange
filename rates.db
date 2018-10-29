@@ -1,12 +1,1 @@
-{
-	"rates": {
-		"provider_1": {
-			"value": 20.4722,
-			"last_updated": "2018-04-22T18:25:43.511Z"
-		},
-		"provider_2_variant_1": {
-			"value": 20.5281,
-			"last_updated": "2018-04-23T18:25:43.511Z"
-		}
-	}
-}
+{"rates":{"banxico":{"value":19.802200317382812,"last_update":"2018-10-29T15:32:43.244048-06:00"},"diario_oficial":{"value":19.43829917907715,"last_update":"2018-10-29T15:32:42.945177-06:00"},"fixer":{"value":1.138428,"last_update":"2018-10-29T15:32:43.087653-06:00"}}}

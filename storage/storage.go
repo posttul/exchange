@@ -65,7 +65,17 @@ func (f *FileStorage) Read() (*Response, error) {
 // Write to the data storage.
 func (f *FileStorage) Write(data []byte) error {
 	f.Data = data
-	return nil
+	return f.save()
+}
+
+func (f *FileStorage) save() error {
+	fle, err := os.OpenFile(f.fileName, os.O_WRONLY, 0777)
+	if err != nil {
+		return err
+	}
+	defer fle.Close()
+	_, err = fle.Write(f.Data)
+	return err
 }
 
 // update is use to check file information when information is required.
