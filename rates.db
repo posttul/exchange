@@ -1,0 +1,12 @@
+{
+	"rates": {
+		"provider_1": {
+			"value": 20.4722,
+			"last_updated": "2018-04-22T18:25:43.511Z"
+		},
+		"provider_2_variant_1": {
+			"value": 20.5281,
+			"last_updated": "2018-04-23T18:25:43.511Z"
+		}
+	}
+}

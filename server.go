@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/posttul/exchange/storage"
@@ -17,11 +19,22 @@ func (s *Server) GetUSDRate() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rates, err := s.Storage.Read()
 		if err != nil {
-			bts, err := json.Marshal(rates)
-			if err != nil {
-				w.WriteHeader(http.StatusOK)
-				w.Write(bts)
-			}
+			log.Printf("The storage is failing, err -> %s", err.Error())
+			fail(w, "Service down")
+			return
 		}
+		bts, err := json.Marshal(rates)
+		if err != nil {
+			log.Printf("Something fail on json GetUSDRate, err -> %s", err.Error())
+			fail(w, "internal server error")
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write(bts)
 	}
+}
+
+func fail(w http.ResponseWriter, say string) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf(`{"status":"error","msg":"%s"}`, say)))
 }

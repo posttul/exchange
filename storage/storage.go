@@ -3,6 +3,7 @@ package storage
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"os"
 	"time"
 )
@@ -14,7 +15,7 @@ type Response struct {
 
 // Rate is use to hold the rate information
 type Rate struct {
-	Value      string    `json:"value"`
+	Value      float64   `json:"value"`
 	LastUpdate time.Time `json:"last_update"`
 }
 
@@ -40,22 +41,11 @@ func NewFileStorage(file string) (*FileStorage, error) {
 type FileStorage struct {
 	Data     []byte `json:"data"`
 	fileName string
-	file     *os.File
 }
 
 // Init the file storage
 func (f *FileStorage) Init() error {
-	fle, err := os.OpenFile(f.fileName, os.O_CREATE, 777)
-	f.file = fle
-	if err != nil {
-		return err
-	}
 	return f.update()
-}
-
-// Close the file.
-func (f *FileStorage) Close() error {
-	return f.file.Close()
 }
 
 // Read information from the storage.
@@ -63,25 +53,32 @@ func (f *FileStorage) Read() (*Response, error) {
 	if err := f.update(); err != nil {
 		return nil, err
 	}
-	r := &Response{}
+	r := Response{}
+
 	if err := json.Unmarshal(f.Data, &r); err != nil {
+		log.Printf("Ups JSON string -> \n %s \n err -> %s", string(f.Data), err.Error())
 		return nil, err
 	}
-	return r, nil
-}
-
-func (f *FileStorage) update() error {
-	// Read file to init with previews data
-	dta, err := ioutil.ReadAll(f.file)
-	if err != nil {
-		return err
-	}
-	f.Data = dta
-	return nil
+	return &r, nil
 }
 
 // Write to the data storage.
 func (f *FileStorage) Write(data []byte) error {
 	f.Data = data
 	return nil
+}
+
+// update is use to check file information when information is required.
+func (f *FileStorage) update() error {
+	fle, err := os.OpenFile(f.fileName, os.O_CREATE, 0777)
+	if err != nil {
+		return err
+	}
+	defer fle.Close()
+	// Read file to init with previews data
+	dta, err := ioutil.ReadAll(fle)
+	if err != nil {
+		return err
+	}
+	return f.Write(dta)
 }

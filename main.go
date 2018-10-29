@@ -16,11 +16,9 @@ func main() {
 	// Start storage.
 	log.Printf("Set storage to file %s", *fileName)
 	store, err := storage.NewFileStorage(*fileName)
-	defer store.Close()
 	if err != nil {
 		panic(err)
 	}
-
 	// Start Server
 	s := Server{
 		Storage: store,
