@@ -17,7 +17,7 @@ type Server struct {
 // GetUSDRate returns the exchange rate for the usd.
 func (s *Server) GetUSDRate() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rates, err := s.Storage.Read()
+		rates, err := s.Storage.Read(&storage.Response{})
 		if err != nil {
 			log.Printf("The storage is failing, err -> %s", err.Error())
 			fail(w, "Service down")

@@ -2,15 +2,25 @@ package storage
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"time"
 )
 
+// Responder is something a store can respond.
+type Responder interface {
+	String() string
+}
+
 // Response handle the expected response of a storage.
 type Response struct {
 	Rates map[string]Rate `json:"rates"`
+}
+
+func (r *Response) String() string {
+	return fmt.Sprintf("%+v", *r)
 }
 
 // Rate is use to hold the rate information
@@ -22,7 +32,7 @@ type Rate struct {
 // Storage is an interface to handle the storage.
 type Storage interface {
 	Write([]byte) error
-	Read() (*Response, error)
+	Read(Responder) (Responder, error)
 	Init() error
 }
 
@@ -49,17 +59,16 @@ func (f *FileStorage) Init() error {
 }
 
 // Read information from the storage.
-func (f *FileStorage) Read() (*Response, error) {
+func (f *FileStorage) Read(r Responder) (Responder, error) {
 	if err := f.update(); err != nil {
 		return nil, err
 	}
-	r := Response{}
 
 	if err := json.Unmarshal(f.Data, &r); err != nil {
 		log.Printf("Ups JSON string -> \n %s \n err -> %s", string(f.Data), err.Error())
 		return nil, err
 	}
-	return &r, nil
+	return r, nil
 }
 
 // Write to the data storage.
